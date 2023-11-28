@@ -1,0 +1,22 @@
+html body{
+    overflow-x: hidden;
+}
+
+.login{
+    height: 90vh;
+    width: 100vw;
+    background-image: url(../images/signin.jpg);
+    background-size: cover;
+}
+.things{
+    width: 50%;
+    height: 90%;
+    border-radius: 10%;
+    float: right;
+}
+.overlay{
+    background-color: rgba(250, 235, 215, 0.39);
+    filter: blur(4);
+    height: 40%;
+    border-radius: 10%;
+}

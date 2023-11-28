@@ -1,0 +1,42 @@
+html body{
+    overflow-x: hidden;
+}
+
+header
+.sidebar{
+    background-color: rgb(50, 50, 50);
+    height: 15%;
+    
+}
+.first{
+    background-image: url(../images/wp10820803.webp);
+    background-size: cover;
+    background-repeat: no-repeat;
+   background-position: bottom;
+    width: 100vw;
+    height: 70vh;
+}
+.overlay{
+    width: 100vw;
+    height: 90%;
+    background-color: rgba(0, 0, 0, 0.568);
+}
+.title{
+    color: aliceblue;
+    line-height: 70vh;
+    font-size:2em;
+}
+
+.section2{
+   
+    height: 100vh;
+    width: 100vw;
+}
+.contains-items{
+    background-color: rgba(130, 241, 206, 0.639);
+    border-radius: 3%;
+    height: auto;
+display: grid;
+grid-template-columns: repeat(3,1fr);
+row-gap: 2%;
+}
