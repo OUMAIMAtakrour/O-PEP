@@ -59,6 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_to_cart'])) {
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <link rel="stylesheet" href="./css/cart.css">
 </head>
 
@@ -68,15 +70,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_to_cart'])) {
         <?php
         // Display the contents of the cart in a table
         if (!empty($_SESSION["cart"])) {
-            echo "<table>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
+            echo "<table class=' table-striped  '>
+           
+            <tr class='table-success col-2'>
+                       
+      <th scope='col-3'>Product</th>
+      <th scope='col-3'>Quantity</th>
+      <th scope='col-6'>Price</th>
                     </tr>";
             foreach ($_SESSION["cart"] as $item) {
                 echo "<tr>
-                        <td>{$item['name']}</td>
+                        <td scope='col-3'>{$item['name']}</td>
                         <td>{$item['quantity']}</td>
                         <td>$ {$item['price']}</td>
                     </tr>";
@@ -91,8 +95,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_to_cart'])) {
 
 
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
-    <script src="" async defer></script>
 </body>
 
 </html>
