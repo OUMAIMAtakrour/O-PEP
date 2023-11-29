@@ -2,6 +2,8 @@
 require 'inc.php';
 
 $sql = "SELECT * FROM plants";
+$sql2 = "SELECT * FROM plants_category";
+$result2 = $conn->query($sql2);
 $result = $conn->query($sql);
 
 ?>

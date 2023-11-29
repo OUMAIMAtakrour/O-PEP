@@ -1,46 +1,34 @@
 <?php
-require 'inc.php';
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+include 'inc.php';
+
 session_start();
-
-
-
-if ($_SESSION) {
-    $ID = $_SESSION['ID'];
-    echo $ID;
+if ($_SESSION['email']) {
+    $email = $_SESSION['email'];
+    echo $email;
 }
 
 if (isset($_POST['01'])) {
-    $high = 01;
+    $hight = 01;
 } else if (isset($_POST['02'])) {
-    $high = 02;
+    $hight = 02;
 }
-if (isset($high)) {
-    $chooserole = $conn->prepare("UPDATE users SET Role = ? WHERE ID= ? ");
-    $chooserole->bind_param("is", $high, $ID);
-    $chooserole->execute();
-    if ($high == 01) {
-        header("location:dashboard.php/");
-    } else if ($high == 02) {
+if (isset($hight)) {
+    $updateRequet = $conn->prepare("UPDATE persons SET user_role = ? where Email = ? ");
+    $updateRequet->bind_param("is", $hight, $email);
+    $updateRequet->execute();
+    if ($hight == 01) {
+
+        header("location: dashboard.php/");
+    } else if ($hight == 02) {
         header("location: clientpage.php/");
     }
 }
-$conn = new mysqli($serverName, $userName, $password, $dbName);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-
-
-
-
-
-
-
-
-
 
 
 ?>
+
 <!DOCTYPE html>
 
 <html>

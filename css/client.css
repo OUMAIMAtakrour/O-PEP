@@ -35,15 +35,24 @@ row-gap: 2%;
 
 
 /* CART STYLE  */
-/* .cartbar{
-    display: none;
-} */
 .cartbar{
+    
+    background-color: rgb(33, 33, 33);
+    height: 100vh;
+    float: right;
+}
+.show-cart {
     display: block;
     background-color: rgb(33, 33, 33);
     height: 100vh;
     float: right;
 }
+/* .cartbar{
+    display: block;
+    background-color: rgb(33, 33, 33);
+    height: 100vh;
+    float: right;
+} */
 .btn a{
     text-decoration: none;
 }

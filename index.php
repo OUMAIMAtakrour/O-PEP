@@ -1,46 +1,51 @@
 <?php
 
 require 'inc.php';
-
+session_start();
 //checking
+
+
+// $sqlquery = "INSERT INTO persons VALUES
+//     ('John', 'Doe', 'john@example.com')"
+
+
+// Check connection
+// if ($conn === false) {
+//   die("ERROR: Could not connect. "
+//     . mysqli_connect_error());
+// }
+if (isset($_POST['submit'])) {
+  $first_name = $_POST['post_first_name'];
+  $last_name = $_POST['post_last_name'];
+  $user_name = $_POST['post_user_name'];
+  $Email = $_POST['post_Email'];
+  $_SESSION["email"] = $Email;
+  $PASS_WORD = $_POST['post_PASS_WORD'];
+  $stmt = $conn->prepare("INSERT INTO persons (first_name, last_name, user_name, Email, PASS_WORD) VALUES (?, ?, ?, ?, ?)");
+
+  // Bind parameters
+  $stmt->bind_param("sssss", $first_name, $last_name, $user_name, $Email, $PASS_WORD);
+
+  // Execute the statement
+  if ($stmt->execute()) {
+    echo "<h3>Data stored in the database successfully.</h3>";
+    echo nl2br("\n$first_name\n $last_name\n $user_name\n $Email\n $PASS_WORD");
+  } else {
+    echo "ERROR: Unable to execute query. " . $stmt->error;
+  }
+}
+
 
 if (isset($_POST['submit'])) {
 
   header("Location: second.php");
   exit;
 }
-$sqlquery = "INSERT INTO persons VALUES
-    ('John', 'Doe', 'john@example.com')"
 
-?>
-<?php
-// Check connection
-// if ($conn === false) {
-//   die("ERROR: Could not connect. "
-//     . mysqli_connect_error());
-// }
 
-$first_name = isset($_REQUEST['post_first_name']) ? $_REQUEST['post_first_name'] : '';
-$last_name = isset($_REQUEST['post_last_name']) ? $_REQUEST['post_last_name'] : '';
-$user_name = isset($_REQUEST['post_user_name']) ? $_REQUEST['post_user_name'] : '';
-$Email = isset($_REQUEST['post_Email']) ? $_REQUEST['post_Email'] : '';
-$PASS_WORD = isset($_REQUEST['post_PASS_WORD']) ? $_REQUEST['post_PASS_WORD'] : '';
-
-$stmt = $conn->prepare("INSERT INTO persons (first_name, last_name, user_name, Email, PASS_WORD) VALUES (?, ?, ?, ?, ?)");
-
-// Bind parameters
-$stmt->bind_param("sssss", $first_name, $last_name, $user_name, $Email, $PASS_WORD);
-
-// Execute the statement
-if ($stmt->execute()) {
-  echo "<h3>Data stored in the database successfully.</h3>";
-  echo nl2br("\n$first_name\n $last_name\n $user_name\n $Email\n $PASS_WORD");
-} else {
-  echo "ERROR: Unable to execute query. " . $stmt->error;
-}
 
 // Close the statement
-$stmt->close();
+
 ?>
 <!DOCTYPE html>
 
