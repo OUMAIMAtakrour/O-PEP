@@ -1,12 +1,17 @@
 <?php
 
 require 'inc.php';
-// $sqlquery = "INSERT INTO persons VALUES
-//     ('John', 'Doe', 'john@example.com')"
+
 //checking
-// if(isset($_POST['submit']))
-// header("Location:second.php/");
-// exit;
+
+if (isset($_POST['submit'])) {
+
+  header("Location: second.php");
+  exit;
+}
+$sqlquery = "INSERT INTO persons VALUES
+    ('John', 'Doe', 'john@example.com')"
+
 ?>
 <?php
 // Check connection
@@ -21,24 +26,21 @@ $user_name = isset($_REQUEST['post_user_name']) ? $_REQUEST['post_user_name'] : 
 $Email = isset($_REQUEST['post_Email']) ? $_REQUEST['post_Email'] : '';
 $PASS_WORD = isset($_REQUEST['post_PASS_WORD']) ? $_REQUEST['post_PASS_WORD'] : '';
 
+$stmt = $conn->prepare("INSERT INTO persons (first_name, last_name, user_name, Email, PASS_WORD) VALUES (?, ?, ?, ?, ?)");
 
-$sql = "INSERT INTO persons(first_name,last_name,user_name,Email,PASS_WORD)
-VALUES ('$first_name','$last_name','$user_name','$Email','$PASS_WORD')";
+// Bind parameters
+$stmt->bind_param("sssss", $first_name, $last_name, $user_name, $Email, $PASS_WORD);
 
-if (mysqli_query($conn, $sql)) {
-  echo "<h3>data stored in a database successfully."
-    . " Please browse your localhost php my admin"
-    . " to view the updated data</h3>";
-
-  echo nl2br("\n$first_name\n $last_name\n "
-    . "$user_name\n $Email\n $PASS_WORD");
+// Execute the statement
+if ($stmt->execute()) {
+  echo "<h3>Data stored in the database successfully.</h3>";
+  echo nl2br("\n$first_name\n $last_name\n $user_name\n $Email\n $PASS_WORD");
 } else {
-  echo "ERROR: Hush! Sorry $sql. "
-    . mysqli_error($conn);
+  echo "ERROR: Unable to execute query. " . $stmt->error;
 }
 
-// Close connection
-mysqli_close($conn);
+// Close the statement
+$stmt->close();
 ?>
 <!DOCTYPE html>
 
@@ -116,7 +118,7 @@ mysqli_close($conn);
             <input type="password" class="form-control" placeholder="*************" aria-label="Username" aria-describedby="basic-addon1" name="post_PASS_WORD" required>
           </div>
 
-          <input class="my-2 mx-auto" type="submit">
+          <input class="my-2 mx-auto" type="submit" name="submit" value="submit">
         </form>
       </div>
 

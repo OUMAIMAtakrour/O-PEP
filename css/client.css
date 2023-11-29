@@ -39,7 +39,11 @@ row-gap: 2%;
     display: none;
 } */
 .cartbar{
+    display: block;
     background-color: rgb(33, 33, 33);
     height: 100vh;
     float: right;
+}
+.btn a{
+    text-decoration: none;
 }

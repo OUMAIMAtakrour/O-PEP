@@ -2,6 +2,16 @@
 require 'inc.php';
 $sql = "SELECT * FROM plants";
 $result = $conn->query($sql);
+
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["search"])) {
+    $searchTerm = $_GET["search"];
+    $sql = "SELECT * FROM plants WHERE Name LIKE '%$searchTerm%'";
+    $result = $conn->query($sql);
+} else {
+    // If no search query is provided, show all plants
+    $sql = "SELECT * FROM plants";
+    $result = $conn->query($sql);
+}
 ?>
 <!DOCTYPE html>
 
@@ -32,27 +42,31 @@ $result = $conn->query($sql);
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
+                   
+                    <button class="btn btn-secondary"><a href="http://localhost/opep/clientpage.php/">ALL</a></button>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Dropdown
                         </a>
+
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            <form action="" method="post">
+
+                                <li><button class="dropdown-item" type="submit" name="show" value="1">Indoor</button></li>
+                                <li><button class="dropdown-item" type="submit" name="show" value="2">Roses</button></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </form>
                         </ul>
+
                     </li>
 
                 </ul>
 
-                <form class="d-flex mx-5" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="d-flex mx-5" role="search" method="get">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
                     <button class="btn btn-outline-secondary" type="submit">Search</button>
                 </form>
                 <button type="button" class="btn btn-dark">
@@ -76,34 +90,76 @@ $result = $conn->query($sql);
         <section class="section2">
             <div class="contains-items col-10 mx-auto my-5 ">
                 <?php
-                while ($row = mysqli_fetch_assoc($result)) :
-                ?>
-                    <div class="container text-center my-3 mx-3">
-                        <div class=" align-items-center col-4">
+                function fetchData($group)
+                {
+                    global $conn;
+                    $data = "SELECT * FROM plants WHERE cate_gory = $group";
+                    $result2 = $conn->query($data);
 
-
-                            <div class="col-3">
-                                <div class="card" style="width: 18rem;">
-                                    <img src="<?= $row["picture"] ?>" class="card-img-top" alt="...">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Card title</h5>
-                                        <p class="card-text"><?php echo $row["price"] ?>$</p>
-                                        <form action="" method="POST">
-                                            <input type="hidden" name="id_pr" value="<?= $row["plant_id"] ?>">
-
-
-                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add To Cart</button>
-                                        </form>
-
-
-                                    </div>
+                    if ($result2->num_rows > 0) {
+                        while ($row = $result2->fetch_assoc()) {
+                            echo "<div class='container text-center my-3 mx-4'>
+                    <div class='align-items-center col-4'>
+                        <div class='col-3'>
+                            <div class='card' style='width: 18rem;'>
+                                <img src='" . $row["picture"] . "' class='card-img-top' alt='...'>
+                                <div class='card-body'>
+                                    <h5 class='card-title'>" . $row["Name"] . "</h5>
+                                    <p class='card-text'>" . $row["price"] . "$</p>
+                                   
                                 </div>
                             </div>
                         </div>
                     </div>
-
+                </div>";
+                        }
+                    } else {
+                        echo "No data found.";
+                    }
+                }
+                ?>
                 <?php
-                endwhile
+                if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['show'])) {
+                    $selectedGroup = $_POST['show'];
+                    fetchData($selectedGroup);
+                }
+
+                ?>
+                <?php if (!isset($_POST['show'])) { ?>
+                    <?php
+
+
+
+                    while ($row = mysqli_fetch_assoc($result)) {
+                    ?>
+                        <div class="container text-center my-3 mx-3">
+                            <div class=" align-items-center col-4">
+
+
+                                <div class="col-3">
+                                    <div class="card" style="width: 18rem;">
+                                        <img src="<?= $row["picture"] ?>" class="card-img-top" alt="...">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><?php echo $row["Name"] ?></h5>
+                                            <p class="card-text"><?php echo $row["cate_gory"] ?></p>
+                                            <p class="card-text"><?php echo $row["price"] ?>$</p>
+                                            <form action="" method="POST">
+
+                                                <input type="hidden" name="id_pr" value="<?= $row["plant_id"] . '_' . time() ?>">
+
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add To Cart</button>
+                                            </form>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                <?php }
+                }
+
                 ?>
 
 

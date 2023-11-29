@@ -1,7 +1,8 @@
 <?php
 require 'inc.php';
 
-
+$sql = "SELECT * FROM plants";
+$result = $conn->query($sql);
 
 ?>
 <?php
@@ -9,8 +10,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $plantName = isset($_POST["plant-name"]) ? $_POST["plant-name"] : '';
 
     $price = isset($_POST["price"]) ? $_POST["price"] : '';
-    $targetDirectory = "images/";
-    $targetFile = $targetDirectory . "/" . $_FILES["image"]["name"];
+    $targetDirectory = "./images/";
+    $targetFile = $targetDirectory .  $_FILES["image"]["name"];
 
 
     // Check if the file is uploaded successfully
@@ -33,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $conn->prepare($insertRequest);
 
             // Bind parameters
-            $stmt->bind_param("sss", $plantName, $targetFile, $price);
+            $stmt->bind_param("ssi", $plantName, $targetFile, $price);
 
             // Execute the statement
             if ($stmt->execute()) {
@@ -59,8 +60,7 @@ if (isset($_POST['delete'])) {
     $stmt->bind_param('i', $_POST['id_pr']);
     $stmt->execute();
 }
-$sql = "SELECT * FROM plants";
-$result = $conn->query($sql);
+
 
 ?>
 
@@ -95,7 +95,14 @@ $result = $conn->query($sql);
     <main>
 
         <section class="section2">
-            <div class="contains-items col-11 mx-auto my-5">
+            <form action="" method="POST">
+                <input type="hidden" name="id_pr" value="<?= $row["plant_id"] ?>">
+
+
+
+                <button type="button" class="btn btn-primary my-5 mx-5" data-bs-toggle="modal" data-bs-target="#exampleModal">Add to catalogue</button>
+            </form>
+            <div class="contains-items col-11 mx-auto my-3">
                 <?php
                 while ($row = mysqli_fetch_assoc($result)) :
                 ?>
@@ -109,15 +116,11 @@ $result = $conn->query($sql);
                                     <div class="card-body">
                                         <h5 class="card-title"><?php echo $row["Name"] ?></h5>
                                         <p class="card-text"><?php echo $row["price"] ?>$</p>
+
                                         <form action="" method="POST">
                                             <input type="hidden" name="id_pr" value="<?= $row["plant_id"] ?>">
-
                                             <input type="submit" name="delete" value="Delete" class="btn btn-primary">
-
-                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add</button>
                                         </form>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -149,8 +152,6 @@ $result = $conn->query($sql);
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-
-
                         <form action="" method="post" enctype="multipart/form-data">
 
                             <div class="input-group mb-3">
@@ -169,10 +170,7 @@ $result = $conn->query($sql);
                                 <label class="input-group-text" for="inputGroupFile01">Upload</label>
                                 <input type="file" class="form-control" id="inputGroupFile01" name="image" accept="image/*">
                             </div>
-                            <div>
-                                <label for="formFileLg" class="form-label">Upload</label>
-                                <input class="form-control form-control-lg" id="formFileLg" type="file">
-                            </div>
+
 
                     </div>
                     <div class="modal-footer">

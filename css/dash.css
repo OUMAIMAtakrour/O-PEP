@@ -29,14 +29,14 @@ header
 
 .section2{
    
-    height: 100vh;
+    height: auto;
     width: 100vw;
 }
 .contains-items{
     background-color: rgba(130, 241, 206, 0.639);
     border-radius: 3%;
     height: auto;
-display: grid;
-grid-template-columns: repeat(3,1fr);
-row-gap: 2%;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    row-gap: 2%;
 }
