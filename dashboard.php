@@ -61,6 +61,31 @@ if (isset($_POST['delete'])) {
     $stmt->execute();
 }
 
+if (isset($_POST['edit_submit'])) {
+    // Handle the form submission for editing
+    $editPlantId = $_POST['edit_id_pr'];
+    $editedName = $_POST['edit_name'];
+    $editedPrice = $_POST['edit_price'];
+
+    // SQL query to update the plant information
+    $updateQuery = "UPDATE plants SET Name=?, price=? WHERE plant_id=?";
+
+    // Prepare the statement
+    $stmt = $conn->prepare($updateQuery);
+
+    // Bind parameters
+    $stmt->bind_param("ssi", $editedName, $editedPrice, $editPlantId);
+
+    // Execute the statement
+    if ($stmt->execute()) {
+        echo "Plant information updated successfully!";
+    } else {
+        echo "Error updating plant information: " . $stmt->error;
+    }
+
+    // Close the statement
+    $stmt->close();
+}
 
 ?>
 
@@ -97,9 +122,6 @@ if (isset($_POST['delete'])) {
         <section class="section2">
             <form action="" method="POST">
                 <input type="hidden" name="id_pr" value="<?= $row["plant_id"] ?>">
-
-
-
                 <button type="button" class="btn btn-primary my-5 mx-5" data-bs-toggle="modal" data-bs-target="#exampleModal">Add to catalogue</button>
             </form>
             <div class="contains-items col-11 mx-auto my-3">
@@ -116,10 +138,12 @@ if (isset($_POST['delete'])) {
                                     <div class="card-body">
                                         <h5 class="card-title"><?php echo $row["Name"] ?></h5>
                                         <p class="card-text"><?php echo $row["price"] ?>$</p>
-
                                         <form action="" method="POST">
                                             <input type="hidden" name="id_pr" value="<?= $row["plant_id"] ?>">
+
                                             <input type="submit" name="delete" value="Delete" class="btn btn-primary">
+                                            <input type="button" name="edit" value="Edit item" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-name="<?php echo $row['Name']; ?>" data-price="<?php echo $row['price']; ?>">
+
                                         </form>
                                     </div>
                                 </div>
@@ -141,6 +165,41 @@ if (isset($_POST['delete'])) {
 
         ?>
         <!-- Button trigger modal -->
+        <!-- Button trigger modal -->
+
+
+        <!-- Modal -->
+        <!-- Modal for Editing Plant -->
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit Plant Information</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Form for editing plant information -->
+                        <form action="" method="POST">
+                            <input type="hidden" name="edit_id_pr" id="edit_id_pr">
+                            <label for="edit_name">Plant Name</label>
+                            <input type="text" class="form-control" id="edit_name" name="edit_name" required>
+
+                            <label for="edit_price">Plant Price ($)</label>
+                            <input type="number" class="form-control" id="edit_price" name="edit_price" required>
+
+                            <?php
+                            // Additional fields for editing other information can be added here
+                            ?>
+
+                            <button type="submit" name="edit_submit" class="btn btn-primary mt-3">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
 
 
         <!-- Modal -->
