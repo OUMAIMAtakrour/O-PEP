@@ -38,7 +38,7 @@ if (isset($_POST['submit'])) {
 
 if (isset($_POST['submit'])) {
 
-  header("Location: second.php");
+  header("Location:second.php");
   exit;
 }
 

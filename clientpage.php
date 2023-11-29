@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_to_cart'])) {
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
 
-                    <button class="btn gi"><a href="http://localhost/opep/clientpage.php/">ALL</a></button>
+                    <button class="btn"><a href="http://localhost/opep/clientpage.php/">ALL</a></button>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Dropdown

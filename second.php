@@ -20,9 +20,9 @@ if (isset($hight)) {
     $updateRequet->execute();
     if ($hight == 01) {
 
-        header("location: dashboard.php/");
+        header("location: /OPEP/login.php/");
     } else if ($hight == 02) {
-        header("location: clientpage.php/");
+        header("location: /OPEP/login.php/");
     }
 }
 
