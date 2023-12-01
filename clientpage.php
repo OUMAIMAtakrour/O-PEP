@@ -1,9 +1,9 @@
 <?php
 require 'inc.php';
-$sql = "SELECT * FROM plants";
-$result = $conn->query($sql);
-$sql2 = "SELECT * FROM plants_category";
-$result2 = $conn->query($sql2);
+$sql3 = "SELECT plants.plant_id, plants.Name, plants.picture, plants.price, plants_category.category_name
+        FROM plants
+        LEFT JOIN plants_category ON plants.cate_gory = plants_category.category_id";
+$result3= $conn->query($sql3);
 if (isset($_POST['cartbutton'])) {
 
     header("Location:/OPEP/cart.php/");
@@ -97,12 +97,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_to_cart'])) {
             <div class="collapse navbar-collapse mx-3" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active text-success" aria-current="page" href="#">Home</a>
                     </li>
 
-                    <button class="btn"><a href="http://localhost/opep/clientpage.php/">ALL</a></button>
+                    <button class="btn text-success "><a href="http://localhost/opep/clientpage.php/">ALL</a></button>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle text-success" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Dropdown
                         </a>
 
@@ -113,8 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_to_cart'])) {
                                 <li><button class="dropdown-item" type="submit" name="show" value="2">Roses</button></li>
                                 <li>
                                     <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                               
                             </form>
                         </ul>
 
@@ -124,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_to_cart'])) {
 
                 <form class="d-flex mx-5" role="search" method="get">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
-                    <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    <button class="btn btn-outline-success " type="submit">Search</button>
                 </form>
                 <form action="" method="post">
                     <button type="submit" class="btn btn-dark" name="cartbutton">
@@ -184,40 +183,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_to_cart'])) {
 
                 ?>
                 <?php if (!isset($_POST['show'])) { ?>
-                    <?php
+                    <div class="contains-items col-11 mx-auto my-3">
+                <?php
+                while ($row = mysqli_fetch_assoc($result3)) :
+                ?>
+                    <div class="container text-center my-3 mx-4">
+                        <div class=" align-items-center col-4">
 
 
-
-                    while ($row = mysqli_fetch_assoc($result)) {
-                    ?>
-                        <div class="container text-center my-3 mx-3">
-                            <div class=" align-items-center col-4">
-
-
-                                <div class="col-3">
-                                    <div class="card" style="width: 18rem;">
-                                        <img src="<?= $row["picture"] ?>" class="card-img-top" alt="...">
-                                        <div class="card-body">
-                                            <h5 class="card-title"><?php echo $row["Name"] ?></h5>
-                                            <p class="card-text"><?php echo $row["cate_gory"] ?></p>
-                                            <p class="card-text"><?php echo $row["price"] ?>$</p>
-
-                                            <div class="product-details">
-                                                <form method="post" action="">
+                            <div class="col-3">
+                                <div class="card" style="width: 18rem;">
+                                    <img src="<?= $row["picture"] ?>" class="card-img-top" alt="...">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?php echo $row["Name"] ?></h5>
+                                        <p class="card-text"><?php echo $row["price"] ?>$</p>
+                                        <p class="card-text">Category: <?php echo $row["category_name"] ?></p>
+                                        <form method="post" action="">
 
 
                                                     <button type="submit" name="add_to_cart" class="btn btn-primary">Add to Cart</button>
                                                 </form>
-                                            </div>
-
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                <?php
+                endwhile
+                ?>
+
+
+
+
+
+            </div>
 
                 <?php }
-                }
+                
 
                 ?>
 

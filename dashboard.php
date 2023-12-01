@@ -1,24 +1,65 @@
 <?php
 require 'inc.php';
 
-$sql = "SELECT * FROM plants";
-$sql2 = "SELECT * FROM plants_category";
-$result2 = $conn->query($sql2);
+$sql = "SELECT plants.plant_id, plants.Name, plants.picture, plants.price, plants_category.category_name
+        FROM plants
+        LEFT JOIN plants_category ON plants.cate_gory = plants_category.category_id";
 $result = $conn->query($sql);
 
-?>
-<?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $plantName = isset($_POST["plant-name"]) ? $_POST["plant-name"] : '';
-
     $price = isset($_POST["price"]) ? $_POST["price"] : '';
-    $targetDirectory = "./images/";
-    $targetFile = $targetDirectory .  $_FILES["image"]["name"];
 
+    // Check if the form is submitted and an image is uploaded
+    if (isset($_POST['submit']) && isset($_FILES['image'])) {
+        $img_name = $_FILES['image']['name'];
+        $img_size = $_FILES['image']['size'];
+        $tmp_name = $_FILES['image']['tmp_name'];
+        $error = $_FILES['image']['error'];
 
-    // Check if the file is uploaded successfully
+        if ($error === 0) {
+            if ($img_size > 125000) {
+                $em = "Sorry, your file is too large.";
+                echo $em;
+                exit();
+            } else {
+                $img_ex = pathinfo($img_name, PATHINFO_EXTENSION);
+                $img_ex_lc = strtolower($img_ex);
+                $allowed_exs = array("jpg", "jpeg", "png");
+
+                if (in_array($img_ex_lc, $allowed_exs)) {
+                    $new_img_name = uniqid("IMG-", true) . '.' . $img_ex_lc;
+                    $img_upload_path = './images/' . $new_img_name;
+                    move_uploaded_file($tmp_name, $img_upload_path);
+
+                    // Insert into the 'images' table
+                    $insertRequest = "INSERT INTO images(image_url) VALUES (?)";
+                    $stmt = $conn->prepare($insertRequest);
+                    $stmt->bind_param("s", $new_img_name);
+
+                    if ($stmt->execute()) {
+                        echo "Image added successfully!";
+                    } else {
+                        echo "Error: " . $stmt->error;
+                    }
+
+                    $stmt->close();
+                    exit();
+                } else {
+                    $em = "You can't upload files of this type";
+                    echo $em;
+                    exit();
+                }
+            }
+        } else {
+            $em = "Unknown error occurred!";
+            echo $em;
+            exit();
+        }
+    }
+
+    // If no image is uploaded, continue with plant information
     if (!empty($_FILES["image"]["tmp_name"]) && is_uploaded_file($_FILES["image"]["tmp_name"])) {
-        // Check the file's MIME type (adjust as needed)
         $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
         $uploadedMimeType = mime_content_type($_FILES["image"]["tmp_name"]);
 
@@ -27,25 +68,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        // Move the uploaded file to the desired directory
+        $targetDirectory = "./images/";
+        $new_img_name = basename($_FILES["image"]["name"]); // Use the original name
+        $targetFile = $targetDirectory . $new_img_name;
+
         if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            // SQL query to insert data into the 'plants' table using prepared statements
             $insertRequest = "INSERT INTO plants (Name, picture, price) VALUES (?, ?, ?)";
-
-            // Prepare the statement
             $stmt = $conn->prepare($insertRequest);
+            $stmt->bind_param("ssi", $plantName, $new_img_name, $price); // Use $new_img_name
 
-            // Bind parameters
-            $stmt->bind_param("ssi", $plantName, $targetFile, $price);
-
-            // Execute the statement
             if ($stmt->execute()) {
                 echo "Plant added successfully!";
             } else {
                 echo "Error: " . $stmt->error;
             }
 
-            // Close the statement
             $stmt->close();
         } else {
             echo "Sorry, there was an error uploading your file.";
@@ -54,6 +91,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Please choose a file to upload.";
     }
 }
+
+
 
 
 
@@ -89,6 +128,8 @@ if (isset($_POST['edit_submit'])) {
     $stmt->close();
 }
 
+
+
 ?>
 
 <!DOCTYPE html>
@@ -110,7 +151,7 @@ if (isset($_POST['edit_submit'])) {
             <ul class="text-light dash-list d-flex  justify-content-evenly col-4">
                 <li>USERS</li>
                 <li>CATEGORIES</li>
-                <li>LOG OUT</li>
+                <li><a href="/OPEP/index.php">LOG OUT</a></li>
             </ul>
 
         </div>
@@ -140,12 +181,11 @@ if (isset($_POST['edit_submit'])) {
                                     <div class="card-body">
                                         <h5 class="card-title"><?php echo $row["Name"] ?></h5>
                                         <p class="card-text"><?php echo $row["price"] ?>$</p>
+                                        <p class="card-text">Category: <?php echo $row["category_name"] ?></p>
                                         <form action="" method="POST">
                                             <input type="hidden" name="id_pr" value="<?= $row["plant_id"] ?>">
-
                                             <input type="submit" name="delete" value="Delete" class="btn btn-primary">
                                             <input type="button" name="edit" value="Edit item" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-name="<?php echo $row['Name']; ?>" data-price="<?php echo $row['price']; ?>">
-
                                         </form>
                                     </div>
                                 </div>
@@ -185,7 +225,19 @@ if (isset($_POST['edit_submit'])) {
                             <input type="hidden" name="edit_id_pr" id="edit_id_pr">
                             <label for="edit_name">Plant Name</label>
                             <input type="text" class="form-control" id="edit_name" name="edit_name" required>
-
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" aria-label="Text input with dropdown button">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#">Action</a></li>
+                                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="#">Separated link</a></li>
+                                </ul>
+                            </div>
                             <label for="edit_price">Plant Price ($)</label>
                             <input type="number" class="form-control" id="edit_price" name="edit_price" required>
 

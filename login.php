@@ -1,6 +1,4 @@
 <?php
-
-
 session_start();
 require 'inc.php';
 
@@ -9,34 +7,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 
     $email = $_POST['email'];
     $password = $_POST['password'];
+    $loginQuery = $conn->prepare("SELECT user_role FROM persons WHERE Email = ? AND PASS_WORD = ?");
 
     $loginQuery = $conn->prepare("SELECT user_role FROM persons WHERE Email = ? AND PASS_WORD = ?");
+    echo $conn->error; // Check for any SQL errors
     $loginQuery->bind_param("ss", $email, $password);
     $loginQuery->execute();
     $loginQuery->bind_result($userRole);
 
+
+
     if ($loginQuery->fetch()) {
-        // Redirect based on user role
-        if ($userRole === "1") {
-            header("Location: /OPEP/dashboard.php/");
-            exit;
-        } elseif ($userRole === "2") {
-            header("Location: /OPEP/clientpage.php/");
-            exit;
+        // Verify the password
+        if (password_verify($password, $hashedPassword)) {
+            // Redirect based on user role
+            if ($high === "1") { // Updated variable name
+                header("Location: /OPEP/dashboard.php/");
+                exit;
+            } elseif ($high === "2") { // Updated variable name
+                header("Location: /OPEP/clientpage.php/");
+                exit;
+            } else {
+                // Handle other roles or show an error message
+                echo "Invalid role!";
+            }
         } else {
-            // Handle other roles or show an error message
-            echo "Invalid role!";
+            // Invalid password
+            echo "Invalid password!";
         }
     } else {
-        // Login failed, handle accordingly (show error message, redirect back to login page, etc.)
-        echo "Invalid credentials!";
+        // User not found
+        echo "User not found!";
     }
 
     $loginQuery->close();
 }
 ?>
 
+
+<?php
+
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,26 +63,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
 </head>
 
 <body>
-    <div class="container login-container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="login-form">
-                    <h2 class="text-center mb-4">Login</h2>
-                    <form action="" method="POST">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email:</label>
-                            <input type="email" class="form-control" name="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password:</label>
-                            <input type="password" class="form-control" name="password" required>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" name="login" class="btn btn-primary">Login</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <div class="container">
+        <div class="card">
+            <form method="post" action="">
+
+                <input type="email" placeholder="Email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                <input type="password" placeholder="Password" name="password" class="form-control" id="exampleInputPassword1">
+
+                <input class="my-2 mx-auto" type="submit" name="login" value="Submit">
+
+            </form>
         </div>
     </div>
 
